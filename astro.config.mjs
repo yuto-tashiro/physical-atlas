@@ -6,10 +6,11 @@ import { unified } from '@astrojs/markdown-remark';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 
 /**
- * 公開URL。Cloudflare のカスタムドメインが決まったら
- * 環境変数 SITE_URL か、この既定値を書き換える。
+ * 公開URL。canonical URL と sitemap に使われるので、
+ * 実際に配信しているドメインと一致させること。
+ * ステージング等で切り替えたいときは環境変数 SITE_URL で上書きできる。
  */
-const site = process.env.SITE_URL ?? 'https://body-atlas.workers.dev';
+const site = process.env.SITE_URL ?? 'https://physical-atlas.hiluco.net';
 
 export default defineConfig({
   site,

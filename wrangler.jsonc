@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "body-atlas",
+  "name": "physical-atlas",
   "compatibility_date": "2026-09-01",
   // Astro が静的出力する dist/ をそのまま Cloudflare Workers の
   // Static Assets として配信する（Worker スクリプトは不要）。

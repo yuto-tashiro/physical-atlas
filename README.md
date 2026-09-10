@@ -2,6 +2,8 @@
 
 身体をめぐる人類の思考の系譜を、哲学史・医学史・神経科学史を横断して辿るWebサイト。
 
+**公開URL: https://physical-atlas.hiluco.net**
+
 - **技術構成**：Astro（Content Collections）+ Markdown + Cloudflare Workers（静的アセット配信）
 - **コンテンツ**：すべて `src/content/` 以下の Markdown。CMSは使っていない
 - **公開フロー**：Markdown を追加して push すれば、Cloudflare が自動でビルドし公開する
@@ -72,8 +74,11 @@ wrangler.jsonc            # Cloudflare Workers 設定
    - Build output directory: `dist`
 4. 保存すると、`main` への push で本番デプロイ、PR ごとにプレビューURLが発行される
 
-`wrangler.jsonc` が Worker 名（`body-atlas`）と静的アセットの配信設定を持っているので、
+`wrangler.jsonc` が Worker 名（`physical-atlas`）と静的アセットの配信設定を持っているので、
 ダッシュボード側で追加の設定は基本的に不要。
+
+> **Worker 名は `wrangler.jsonc` の `name` が正**。ここを変えると別の Worker として
+> 新規デプロイされ、現在の公開サイトは更新されない。
 
 ### 手動デプロイ
 
@@ -82,13 +87,17 @@ npx wrangler login
 npm run deploy
 ```
 
-### 公開URLの設定
+### 公開URL
 
-`astro.config.mjs` の `site` はサイトマップと canonical URL に使われる。
-カスタムドメインを設定したら、環境変数 `SITE_URL` を設定するか既定値を書き換える。
+本番は **https://physical-atlas.hiluco.net**（Cloudflare Workers、HILUCO アカウント）。
+
+`astro.config.mjs` の `site` はサイトマップと canonical URL に使われるので、
+**実際に配信しているドメインと必ず一致させる**。ドメインを変えたらここも変える。
+
+ステージング等で一時的に切り替えたいときは環境変数で上書きできる。
 
 ```bash
-SITE_URL=https://your-domain.example npm run build
+SITE_URL=https://staging.example npm run build
 ```
 
 ---
