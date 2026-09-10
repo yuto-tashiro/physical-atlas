@@ -1,0 +1,16 @@
+---
+import type { Work } from '../lib/atlas';
+import { loadAtlas } from '../lib/atlas';
+
+interface Props { work: Work; }
+const { work } = Astro.props;
+const d = work.data;
+const atlas = await loadAtlas();
+const author = atlas.peopleById.get(d.author);
+---
+<a class="card" href={`/works/${work.id}`}>
+  <p class="card__meta">{d.yearLabel ?? d.year}{author ? ` ・ ${author.data.nameJa}` : ''}</p>
+  <h3 class="card__title">{d.titleJa}</h3>
+  {d.titleOriginal && <p class="card__sub">{d.titleOriginal}</p>}
+  <p class="card__body">{d.summary}</p>
+</a>

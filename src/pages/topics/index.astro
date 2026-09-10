@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import { loadAtlas } from '../../lib/atlas';
+
+const atlas = await loadAtlas();
+---
+
+<Base title="テーマ" description="身体をめぐる主要な問いから、人物と概念を横断して辿る。">
+  <div class="wrap section" style="padding-bottom:2rem">
+    <p class="eyebrow">Topics</p>
+    <h1>問いから探す</h1>
+    <p style="max-width:44rem;color:var(--ink-2)">
+      時代でも分野でもなく、「問い」を軸に人物と概念を束ねる。同じ問いに、哲学と科学がそれぞれどう答えてきたかが見える。
+    </p>
+  </div>
+
+  <div class="wrap section" style="padding-top:0">
+    <div class="grid grid-wide">
+      {atlas.topics.map((t) => (
+        <a class="card" href={`/topics/${t.id}`}>
+          <p class="card__meta">{t.data.titleEn}</p>
+          <h3 class="card__title">{t.data.question}</h3>
+          <p class="card__sub">{t.data.title}</p>
+          <p class="card__body">{t.data.summary}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,40 @@
+---
+interface Source {
+  type: string; title: string; author?: string;
+  year?: number | string; publisher?: string; url?: string; note?: string;
+}
+interface Props { sources: Source[]; }
+const { sources } = Astro.props;
+
+const typeLabel: Record<string, string> = {
+  primary: '一次資料',
+  secondary: '二次資料',
+  translation: '邦訳',
+  reference: '事典・レファレンス',
+  paper: '論文',
+};
+const order = ['primary', 'translation', 'paper', 'secondary', 'reference'];
+const groups = order
+  .map((t) => ({ type: t, items: sources.filter((s) => s.type === t) }))
+  .filter((g) => g.items.length > 0);
+---
+{groups.length > 0 && (
+  <div class="stack">
+    {groups.map((g) => (
+      <div>
+        <p class="eyebrow" style="margin-bottom:.35rem">{typeLabel[g.type] ?? g.type}</p>
+        <ul style="margin:0;padding-left:1.2em;font-size:.9rem;line-height:1.8">
+          {g.items.map((s) => (
+            <li>
+              {s.url ? <a href={s.url} rel="noopener noreferrer" target="_blank">{s.title}</a> : s.title}
+              {s.author && <span style="color:var(--muted)"> ／ {s.author}</span>}
+              {s.publisher && <span style="color:var(--muted)"> ／ {s.publisher}</span>}
+              {s.year !== undefined && <span style="color:var(--muted)"> ／ {s.year}</span>}
+              {s.note && <span style="color:var(--muted)">（{s.note}）</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+)}

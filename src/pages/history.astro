@@ -1,0 +1,164 @@
+---
+import Base from '../layouts/Base.astro';
+import { loadAtlas } from '../lib/atlas';
+import { eraLabel, eraSubtitle, eraOrder, formatYear, kindLabel } from '../lib/vocab';
+
+const atlas = await loadAtlas();
+
+type Item = {
+  year: number;
+  yearLabel: string;
+  kind: 'person' | 'work' | 'event';
+  track: 'thought' | 'science';
+  title: string;
+  sub: string;
+  body: string;
+  href: string;
+  anchor?: string;
+  era: string;
+};
+
+const scienceFields = new Set(['physiology', 'neuroscience', 'medicine', 'movement-science', 'psychology', 'biology']);
+
+const items: Item[] = [];
+
+for (const p of atlas.people) {
+  const year = p.data.birth ?? 0;
+  items.push({
+    year,
+    yearLabel: p.data.lifespanLabel ?? `${formatYear(p.data.birth)}–${p.data.death !== undefined ? formatYear(p.data.death) : ''}`,
+    kind: 'person',
+    track: p.data.fields.some((f) => scienceFields.has(f)) && !p.data.fields.includes('philosophy') ? 'science' : 'thought',
+    title: p.data.nameJa,
+    sub: p.data.nameEn,
+    body: p.data.headline,
+    href: `/people/${p.id}`,
+    era: p.data.era,
+  });
+}
+
+for (const w of atlas.works) {
+  const author = atlas.peopleById.get(w.data.author);
+  items.push({
+    year: w.data.year,
+    yearLabel: String(w.data.yearLabel ?? formatYear(w.data.year)),
+    kind: 'work',
+    track: w.data.fields.some((f) => scienceFields.has(f)) && !w.data.fields.includes('philosophy') ? 'science' : 'thought',
+    title: `『${w.data.titleJa}』`,
+    sub: [w.data.titleOriginal ?? w.data.titleEn, author?.data.nameJa].filter(Boolean).join(' ／ '),
+    body: w.data.summary,
+    href: `/works/${w.id}`,
+    era: author?.data.era ?? 'contemporary',
+  });
+}
+
+for (const e of atlas.events) {
+  items.push({
+    year: e.data.year,
+    yearLabel: String(e.data.yearLabel ?? formatYear(e.data.year)),
+    kind: 'event',
+    track: 'science',
+    title: e.data.title,
+    sub: kindLabel[e.data.kind],
+    body: e.data.summary,
+    href: `/history#event-${e.id}`,
+    anchor: `event-${e.id}`,
+    era: e.data.era,
+  });
+}
+
+items.sort((a, b) => a.year - b.year || (a.kind === 'person' ? -1 : 1));
+
+const groups = eraOrder
+  .map((era) => ({ era, items: items.filter((i) => i.era === era) }))
+  .filter((g) => g.items.length > 0);
+---
+
+<Base
+  title="通史"
+  description="古代から現代まで、身体をめぐる思想史と科学的発見を同じタイムライン上に並べる。"
+>
+  <div class="wrap section" style="padding-bottom:1.5rem">
+    <p class="eyebrow">History</p>
+    <h1>身体論の通史</h1>
+    <p style="max-width:44rem;color:var(--ink-2)">
+      哲学者・科学者の登場、著作の刊行、実験や発見を、ひとつの時間軸に並べる。
+      哲学史でも医学史でもなく、その両方を「身体とは何か」という一つの問いのもとで見るための年表。
+    </p>
+
+    <div class="track-toggle" data-toggle>
+      <button class="tag tag--btn is-on" data-track="">すべて</button>
+      <button class="tag tag--btn" data-track="thought">思想</button>
+      <button class="tag tag--btn" data-track="science">科学</button>
+    </div>
+  </div>
+
+  {groups.map((g) => (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow"><span class="era-dot" style={`--era: var(--era-${g.era})`}></span>Era</p>
+          <h2>{eraLabel[g.era]}</h2>
+          <p>{eraSubtitle[g.era]}</p>
+        </div>
+
+        <ol class="tl" style={`--era: var(--era-${g.era})`}>
+          {g.items.map((i) => (
+            <li class="tl__item" data-track={i.track} id={i.anchor}>
+              <div class="tl__year">{i.yearLabel}</div>
+              <div class="tl__body">
+                <p class="tl__kind">{i.kind === 'person' ? '人物' : i.kind === 'work' ? '著作' : '研究・出来事'}</p>
+                <h3 class="tl__title">
+                  {i.anchor ? i.title : <a href={i.href}>{i.title}</a>}
+                </h3>
+                {i.sub && <p class="tl__sub">{i.sub}</p>}
+                <p class="tl__text">{i.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  ))}
+</Base>
+
+<style>
+  .track-toggle { display: flex; gap: .4rem; margin-top: 1.4rem; }
+  .tag--btn { cursor: pointer; font-family: var(--font-mono); background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: .18em .8em; font-size: .74rem; }
+  .tag--btn.is-on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .tl { list-style: none; margin: 0; padding: 0 0 0 1.1rem; border-left: 2px solid var(--line); }
+  .tl__item { position: relative; display: grid; grid-template-columns: 6.5rem 1fr; gap: 0 1.4rem; padding: .9rem 0 1.3rem; }
+  .tl__item::before {
+    content: ''; position: absolute; left: calc(-1.1rem - 5px); top: 1.5rem;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--paper); border: 2px solid var(--era, var(--muted));
+  }
+  .tl__year { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); padding-top: .25rem; letter-spacing: .02em; }
+  .tl__kind { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; color: var(--era, var(--muted)); margin: 0 0 .15rem; }
+  .tl__title { font-size: 1.05rem; margin: 0 0 .2rem; }
+  .tl__title a { text-decoration: none; color: var(--ink); }
+  .tl__title a:hover { color: var(--accent); text-decoration: underline; }
+  .tl__sub { margin: 0 0 .35rem; font-size: .8rem; color: var(--muted); }
+  .tl__text { margin: 0; font-size: .92rem; color: var(--ink-2); line-height: 1.75; max-width: 42rem; }
+
+  @media (max-width: 640px) {
+    .tl__item { grid-template-columns: 1fr; gap: .15rem; }
+    .tl__year { padding-top: 0; }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector('[data-toggle]');
+  if (toggle) {
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.tl__item'));
+    toggle.querySelectorAll<HTMLButtonElement>('[data-track]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const track = btn.dataset.track ?? '';
+        toggle.querySelectorAll('[data-track]').forEach((b) => b.classList.remove('is-on'));
+        btn.classList.add('is-on');
+        for (const item of items) item.hidden = !!track && item.dataset.track !== track;
+      });
+    });
+  }
+</script>

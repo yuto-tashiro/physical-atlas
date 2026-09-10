@@ -1,0 +1,42 @@
+---
+import { loadAtlas, resolveStep, type Route } from '../lib/atlas';
+import { relationLabel } from '../lib/vocab';
+
+interface Props { steps: Route['data']['steps']; }
+const { steps } = Astro.props;
+const atlas = await loadAtlas();
+const nodes = steps.map((s) => ({ ...resolveStep(atlas, s), relation: s.relation, note: s.note }));
+const notes = nodes.filter((n) => n.note);
+---
+<ol class="chain">
+  {nodes.map((n, i) => (
+    <li>
+      {i > 0 && (
+        <span class="chain__arrow" title={n.relation ? relationLabel[n.relation] : undefined}>
+          →{n.relation && n.relation !== 'direct_influence' ? <span style="font-size:.75em;margin-left:.2em">{relationLabel[n.relation]}</span> : ''}
+        </span>
+      )}
+      {n.href
+        ? <a class={`chain__node chain__node--${n.kind}`} href={n.href}>{n.label}</a>
+        : <span class={`chain__node chain__node--${n.kind}`}>{n.label}</span>}
+    </li>
+  ))}
+</ol>
+
+{notes.length > 0 && (
+  <ul class="chain-notes">
+    {notes.map((n) => (
+      <li><span class="chain-notes__who">{n.label}</span>{n.note}</li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .chain-notes { list-style: none; margin: .9rem 0 0; padding: 0; max-width: 46rem; }
+  .chain-notes li { font-size: .82rem; color: var(--muted); line-height: 1.75; margin-bottom: .25rem; }
+  .chain-notes__who {
+    font-family: var(--font-mono); font-size: .72rem; color: var(--ink-2);
+    margin-right: .5em; letter-spacing: .04em;
+  }
+  .chain-notes__who::after { content: '：'; }
+</style>

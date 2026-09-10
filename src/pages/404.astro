@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="ページが見つかりません">
+  <div class="wrap-text section" style="text-align:center">
+    <p class="eyebrow">404</p>
+    <h1>そのページは見つかりませんでした</h1>
+    <p style="color:var(--ink-2)">
+      URLが変わったか、まだ書かれていないページかもしれません。
+    </p>
+    <p style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:2rem">
+      <a class="btn btn--primary" href="/">トップへ</a>
+      <a class="btn" href="/people">人物一覧</a>
+      <a class="btn" href="/concepts">概念一覧</a>
+    </p>
+  </div>
+</Base>

@@ -1,0 +1,146 @@
+---
+import Base from '../layouts/Base.astro';
+import { loadAtlas } from '../lib/atlas';
+import { relationLabel, relationHint, evidenceLabel, evidenceHint, reviewLabel } from '../lib/vocab';
+
+const atlas = await loadAtlas();
+const counts = {
+  people: atlas.people.length,
+  concepts: atlas.concepts.length,
+  works: atlas.works.length,
+  events: atlas.events.length,
+  topics: atlas.topics.length,
+  routes: atlas.routes.length,
+};
+const reviewed = atlas.people.filter((p) => p.data.reviewStatus === 'reviewed').length;
+---
+
+<Base title="このサイトについて" description="サイトの目的・編集方針・情報の追加方法。">
+  <div class="wrap-text section">
+    <p class="eyebrow">About</p>
+    <h1>このサイトについて</h1>
+
+    <div class="prose">
+      <p>
+        身体をめぐる知は、哲学・医学・生理学・心理学・神経科学・社会学に分かれて蓄積されてきた。
+        しかし「身体とは何か」という問いそのものは、分野をまたいで一つである。
+        このサイトは、その一つの問いを軸に、2500年分の思考を横断して辿れるようにするための地図である。
+      </p>
+      <p>
+        人物辞典ではない。目指しているのは、
+        <strong>身体についての考え方が歴史のなかでどう変わってきたのかを探索できる「思想の地図」</strong>である。
+      </p>
+
+      <h2>三つの系譜という補助線</h2>
+      <p>身体をめぐる知は、おおまかに三つの系譜に分けて見ると整理しやすい。</p>
+      <ul>
+        <li><strong>主体としての身体</strong>（現象学系）——フッサール、メルロ＝ポンティ、ギャラガー</li>
+        <li><strong>対象化される身体</strong>（生理学・医学系）——ヴェサリウス、ベルナール、シェリントン、ベルンシュタイン</li>
+        <li><strong>関係・権力のなかの身体</strong>（社会学・人類学系）——モース、ブルデュー、フーコー</li>
+      </ul>
+      <p>
+        この三つはデカルト（17世紀）で決定的に分岐し、20世紀のメルロ＝ポンティと、
+        20世紀末の身体化認知（embodied cognition）で再接続に向かった。
+        ただし「三系譜」はあくまで分析のための補助線であり、実際には相互に浸透している。
+      </p>
+
+      <h2>編集方針</h2>
+
+      <h3>1. 直接影響と概念的並行を区別する</h3>
+      <p>
+        思想同士の関係を単純な「影響関係」に潰さない。
+        「歴史的に直接読まれ受け継がれた」のか、「後から見ると似た問題を扱っている」のかを、
+        次の語彙で区別して記録している。
+      </p>
+      <table>
+        <thead><tr><th>関係</th><th>意味</th></tr></thead>
+        <tbody>
+          {Object.keys(relationLabel).map((r) => (
+            <tr><td>{relationLabel[r]}</td><td>{relationHint[r]}</td></tr>
+          ))}
+        </tbody>
+      </table>
+      <p>
+        さらに各関係には<code>confidence</code>（high / medium / low）を持たせている。
+        「アリストテレスからギブソンまで一直線につながる」といった、過度な思想史的単純化を防ぐためである。
+      </p>
+
+      <h3>2. 確立した知見と論争中の主張を混ぜない</h3>
+      <p>
+        身体をめぐる現代科学には、堅実な系譜（運動制御論、内受容感覚研究）と、
+        誇大に語られがちな系譜（社会的プライミング、ミラーニューロン万能論、ソマティック・マーカー仮説、自由エネルギー原理）が混在している。
+        概念ページにはそれぞれの現在の位置づけを明示している。
+      </p>
+      <table>
+        <thead><tr><th>位置づけ</th><th>意味</th></tr></thead>
+        <tbody>
+          {Object.keys(evidenceLabel).map((e) => (
+            <tr><td>{evidenceLabel[e]}</td><td>{evidenceHint[e]}</td></tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3>3. 出典を追跡可能にする</h3>
+      <p>
+        AIの助けを借りて執筆した文章を、そのまま学術的事実として提示しない。
+        すべてのページに「人物 → 主張 → 原典 → 二次資料」を追跡できる出典欄と、次の検証ステータスを持たせている。
+      </p>
+      <ul>
+        {Object.keys(reviewLabel).map((r) => <li><strong>{reviewLabel[r]}</strong>（<code>{r}</code>）</li>)}
+      </ul>
+      <p>
+        現在、人物ページ{counts.people}件のうち検証済みは{reviewed}件。
+        <strong>検証済み以外のページは、年代・引用・帰属について原典に当たって確認してほしい。</strong>
+      </p>
+
+      <h3>4. 西洋中心にしない</h3>
+      <p>
+        東洋・日本の身体論（『黄帝内経』の気と経絡、ヨーガの身体階層論、貝原益軒『養生訓』、市川浩、湯浅泰雄）は、
+        西洋近代の心身二元論への付録ではなく、対等な系譜として扱う。
+        「心身一如」「修行」「養生」は、そもそも心と身体の分岐を前提としない統合的枠組みである。
+      </p>
+
+      <h2 id="contributing">情報の追加方法</h2>
+      <p>
+        コンテンツはすべて GitHub 上の Markdown で管理している。CMS は使っていない。
+        Markdown を1ファイル追加して push すれば、Cloudflare が自動でビルドし公開する。
+      </p>
+      <pre><code>{`調べる
+  ↓
+src/content/people/<id>.md を追加
+  ↓
+npm run validate   # frontmatter とリンク切れを検査
+  ↓
+git commit && git push
+  ↓
+Cloudflare Workers が自動デプロイ`}</code></pre>
+      <p>
+        スキーマは <code>src/content.config.ts</code> に定義されている。
+        frontmatter が壊れていればビルド時に落ちる。存在しないIDを参照していれば <code>npm run validate</code> が検出する。
+        詳しい手順とテンプレートはリポジトリの <code>CONTRIBUTING.md</code> にある。
+      </p>
+      <p>
+        関係は<strong>片側に書けば両側に出る</strong>。
+        たとえばメルロ＝ポンティのページに「ヴァレラへ直接影響」と書けば、ヴァレラのページにも逆向きのリンクが自動で現れる。
+      </p>
+
+      <h2>現在の収録数</h2>
+      <table>
+        <tbody>
+          <tr><td>人物</td><td>{counts.people}</td></tr>
+          <tr><td>概念</td><td>{counts.concepts}</td></tr>
+          <tr><td>著作</td><td>{counts.works}</td></tr>
+          <tr><td>研究・出来事</td><td>{counts.events}</td></tr>
+          <tr><td>テーマ</td><td>{counts.topics}</td></tr>
+          <tr><td>思想ルート</td><td>{counts.routes}</td></tr>
+        </tbody>
+      </table>
+
+      <h2>技術構成</h2>
+      <p>
+        Astro（Content Collections）＋ Markdown ＋ GitHub ＋ Cloudflare Workers（静的アセット配信）。
+        JavaScript は検索と絞り込みにのみ使い、それ以外は静的HTMLとして配信している。
+      </p>
+    </div>
+  </div>
+</Base>

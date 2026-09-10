@@ -1,0 +1,18 @@
+---
+import type { Concept } from '../lib/atlas';
+import { evidenceLabel } from '../lib/vocab';
+
+interface Props { concept: Concept; }
+const { concept } = Astro.props;
+const d = concept.data;
+---
+<a class="card" href={`/concepts/${concept.id}`}>
+  <p class="card__meta">
+    {d.yearLabel ?? (d.year ? String(d.year) : '')}
+    {d.year || d.yearLabel ? <span style="opacity:.5"> ・ </span> : null}
+    {evidenceLabel[d.evidenceStatus]}
+  </p>
+  <h3 class="card__title">{d.titleJa}</h3>
+  <p class="card__sub">{d.titleEn}</p>
+  <p class="card__body">{d.oneLiner}</p>
+</a>

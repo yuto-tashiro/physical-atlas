@@ -1,0 +1,165 @@
+---
+import Base from '../../layouts/Base.astro';
+import { loadAtlas } from '../../lib/atlas';
+import { eraLabel, eraOrder, fieldLabel, themeLabel, formatLifespan } from '../../lib/vocab';
+
+const atlas = await loadAtlas();
+const people = atlas.people;
+
+const usedEras = eraOrder.filter((e) => people.some((p) => p.data.era === e));
+const usedFields = Object.keys(fieldLabel).filter((f) => people.some((p) => p.data.fields.includes(f as any)));
+const usedThemes = Object.keys(themeLabel).filter((t) => people.some((p) => p.data.themes.includes(t as any)));
+---
+
+<Base title="人物" description="身体について考えた哲学者・医学者・科学者の一覧。時代・分野・テーマで絞り込める。">
+  <div class="wrap section" style="padding-bottom:1.5rem">
+    <p class="eyebrow">People</p>
+    <h1>人物から探す</h1>
+    <p style="max-width:42rem;color:var(--ink-2)">
+      身体について問いを立てた{people.length}人。生年順に並んでいる。時代・分野・テーマで絞り込み、名前やキーワードで検索できる。
+    </p>
+  </div>
+
+  <div class="wrap" style="padding-bottom:2rem">
+    <div class="filters stack" data-filters>
+      <label class="search-box">
+        <span class="visually-hidden">検索</span>
+        <input type="search" placeholder="名前・キーワードで検索（例: 身体図式、Gibson）" data-search />
+      </label>
+
+      <div class="filter-row">
+        <span class="filter-label">時代</span>
+        <div class="tags">
+          <button class="tag tag--btn is-on" data-facet="era" data-value="">すべて</button>
+          {usedEras.map((e) => (
+            <button class="tag tag--btn" data-facet="era" data-value={e}>
+              <span class="era-dot" style={`--era: var(--era-${e})`}></span>{eraLabel[e]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-label">分野</span>
+        <div class="tags">
+          <button class="tag tag--btn is-on" data-facet="field" data-value="">すべて</button>
+          {usedFields.map((f) => (
+            <button class="tag tag--btn" data-facet="field" data-value={f}>{fieldLabel[f]}</button>
+          ))}
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-label">テーマ</span>
+        <div class="tags">
+          <button class="tag tag--btn is-on" data-facet="theme" data-value="">すべて</button>
+          {usedThemes.map((t) => (
+            <button class="tag tag--btn" data-facet="theme" data-value={t}>{themeLabel[t]}</button>
+          ))}
+        </div>
+      </div>
+
+      <p class="filter-count" data-count aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div class="wrap section" style="padding-top:0">
+    <div class="grid grid-cards" data-results>
+      {people.map((p) => (
+        <a
+          class="card"
+          href={`/people/${p.id}`}
+          data-person
+          data-era={p.data.era}
+          data-fields={p.data.fields.join(' ')}
+          data-themes={p.data.themes.join(' ')}
+          data-text={[p.data.nameJa, p.data.nameEn, p.data.nameOriginal, p.data.headline, ...p.data.keywords].filter(Boolean).join(' ').toLowerCase()}
+        >
+          <p class="card__meta">
+            <span class="era-dot" style={`--era: var(--era-${p.data.era})`}></span>
+            {formatLifespan(p.data.birth, p.data.death, p.data.lifespanLabel)}
+          </p>
+          <h3 class="card__title">{p.data.nameJa}</h3>
+          <p class="card__sub">{p.data.nameEn}</p>
+          <p class="card__body">{p.data.headline}</p>
+          {p.data.keywords.length > 0 && (
+            <ul class="tags">{p.data.keywords.slice(0, 4).map((k) => <li class="tag">#{k}</li>)}</ul>
+          )}
+        </a>
+      ))}
+    </div>
+    <p class="empty" data-empty hidden>条件に合う人物が見つかりませんでした。</p>
+  </div>
+</Base>
+
+<style>
+  .filters { border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.2rem; background: var(--surface); }
+  .search-box input {
+    width: 100%; font: inherit; font-size: .95rem; padding: .6rem .85rem;
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    background: var(--paper); color: var(--ink);
+  }
+  .search-box input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .filter-row { display: flex; gap: .8rem; align-items: baseline; flex-wrap: wrap; }
+  .filter-label { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .12em; color: var(--muted); min-width: 3rem; }
+  .tag--btn { cursor: pointer; font-family: var(--font-mono); background: var(--surface-2); color: var(--muted); }
+  .tag--btn:hover { border-color: var(--line-strong); color: var(--ink-2); }
+  .tag--btn.is-on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .filter-count { margin: 0; font-size: .82rem; color: var(--muted); }
+  .empty { text-align: center; color: var(--muted); padding: 3rem 0; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+
+<script>
+  const root = document.querySelector('[data-filters]');
+  if (root) {
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-person]'));
+    const search = root.querySelector<HTMLInputElement>('[data-search]');
+    const countEl = root.querySelector<HTMLElement>('[data-count]');
+    const emptyEl = document.querySelector<HTMLElement>('[data-empty]');
+    const state: Record<string, string> = { era: '', field: '', theme: '' };
+
+    function apply() {
+      const q = (search?.value ?? '').trim().toLowerCase();
+      let shown = 0;
+      for (const card of cards) {
+        const okEra = !state.era || card.dataset.era === state.era;
+        const okField = !state.field || (card.dataset.fields ?? '').split(' ').includes(state.field);
+        const okTheme = !state.theme || (card.dataset.themes ?? '').split(' ').includes(state.theme);
+        const okText = !q || (card.dataset.text ?? '').includes(q);
+        const ok = okEra && okField && okTheme && okText;
+        card.hidden = !ok;
+        if (ok) shown++;
+      }
+      if (countEl) countEl.textContent = `${shown}件を表示中（全${cards.length}件）`;
+      if (emptyEl) emptyEl.hidden = shown !== 0;
+    }
+
+    root.querySelectorAll<HTMLButtonElement>('[data-facet]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const facet = btn.dataset.facet!;
+        state[facet] = btn.dataset.value ?? '';
+        root.querySelectorAll(`[data-facet="${facet}"]`).forEach((b) => b.classList.remove('is-on'));
+        btn.classList.add('is-on');
+        apply();
+      });
+    });
+    search?.addEventListener('input', apply);
+
+    // URL のクエリで初期状態を指定できる（例: /people?era=ancient&q=knowledge）
+    const params = new URLSearchParams(location.search);
+    for (const facet of ['era', 'field', 'theme']) {
+      const value = params.get(facet);
+      if (!value) continue;
+      const btn = root.querySelector<HTMLButtonElement>(`[data-facet="${facet}"][data-value="${CSS.escape(value)}"]`);
+      if (!btn) continue;
+      state[facet] = value;
+      root.querySelectorAll(`[data-facet="${facet}"]`).forEach((b) => b.classList.remove('is-on'));
+      btn.classList.add('is-on');
+    }
+    const q = params.get('q');
+    if (q && search) search.value = q;
+
+    apply();
+  }
+</script>

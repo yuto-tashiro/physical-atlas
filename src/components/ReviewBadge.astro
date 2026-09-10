@@ -1,0 +1,13 @@
+---
+import { reviewLabel } from '../lib/vocab';
+
+interface Props { status: string; lastReviewed?: string; }
+const { status, lastReviewed } = Astro.props;
+
+const color =
+  status === 'reviewed' ? 'var(--era-late-c20)' :
+  status === 'researched' ? 'var(--era-ancient)' : 'var(--muted)';
+---
+<span class="pill" title="このページの検証状況" style={`border-color:${color};color:${color}`}>
+  {reviewLabel[status] ?? status}{lastReviewed ? ` ・ ${lastReviewed}` : ''}
+</span>

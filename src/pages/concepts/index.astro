@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import ConceptCard from '../../components/ConceptCard.astro';
+import { loadAtlas } from '../../lib/atlas';
+import { evidenceLabel, evidenceHint } from '../../lib/vocab';
+
+const atlas = await loadAtlas();
+const order = ['philosophical', 'established', 'developing', 'contested'];
+const groups = order
+  .map((s) => ({ status: s, items: atlas.concepts.filter((c) => c.data.evidenceStatus === s) }))
+  .filter((g) => g.items.length > 0);
+---
+
+<Base title="概念" description="身体をめぐる主要概念。哲学的概念と、実証研究の現状を区別して整理している。">
+  <div class="wrap section" style="padding-bottom:2rem">
+    <p class="eyebrow">Concepts</p>
+    <h1>概念から探す</h1>
+    <p style="max-width:44rem;color:var(--ink-2)">
+      身体論を読み解くための{atlas.concepts.length}の概念。「哲学的概念」と「実証研究として確立した知見」「まだ論争中の主張」を混ぜないために、
+      それぞれの現在の位置づけを明示している。
+    </p>
+  </div>
+
+  {groups.map((g) => (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>{evidenceLabel[g.status]}</h2>
+          <p>{evidenceHint[g.status]}</p>
+        </div>
+        <div class="grid grid-cards">{g.items.map((c) => <ConceptCard concept={c} />)}</div>
+      </div>
+    </section>
+  ))}
+</Base>

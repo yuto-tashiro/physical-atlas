@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+import Chain from '../components/Chain.astro';
+import { loadAtlas } from '../lib/atlas';
+import { relationLabel, relationHint } from '../lib/vocab';
+
+const atlas = await loadAtlas();
+
+// 全人物の関係を種類ごとに集計する
+const allLinks = atlas.people.flatMap((p) =>
+  p.data.relatedPeople
+    .filter((l) => atlas.peopleById.has(l.id))
+    .map((l) => ({ from: p, to: atlas.peopleById.get(l.id)!, ...l })),
+);
+const byRelation = Object.keys(relationLabel)
+  .map((r) => ({ relation: r, links: allLinks.filter((l) => l.relation === r) }))
+  .filter((g) => g.links.length > 0);
+---
+
+<Base
+  title="系譜"
+  description="身体論の主要な思想ルートと、人物間の関係の一覧。直接影響と概念的並行を区別して記述している。"
+>
+  <div class="wrap section" style="padding-bottom:2rem">
+    <p class="eyebrow">Connections</p>
+    <h1>思想の系譜</h1>
+    <p style="max-width:44rem;color:var(--ink-2)">
+      身体論は一直線には進まない。ここでは主要な流れをいくつかのルートとして示す。
+      ただし「歴史的に直接影響した」ことと「後から見ると似た問題を扱っている」ことは別のものとして扱う。
+      矢印に付いたラベルがその区別を示している。
+    </p>
+  </div>
+
+  {atlas.routes.map((r) => (
+    <section class="section" id={`route-${r.id}`}>
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">{r.data.titleEn}</p>
+          <h2>{r.data.title}</h2>
+          <p style="max-width:44rem">{r.data.summary}</p>
+        </div>
+        <Chain steps={r.data.steps} />
+      </div>
+    </section>
+  ))}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>関係の種類でみる</h2>
+        <p>サイト全体に記録された人物間の関係を、種類ごとに並べたもの。</p>
+      </div>
+
+      <div class="stack" style="gap:2rem">
+        {byRelation.map((g) => (
+          <div>
+            <h3 style="margin-bottom:.2rem">{relationLabel[g.relation]}</h3>
+            <p style="color:var(--muted);font-size:.88rem;margin-bottom:.8rem">{relationHint[g.relation]}</p>
+            <ul class="rel-list">
+              {g.links.map((l) => (
+                <li>
+                  <a href={`/people/${l.from.id}`}>{l.from.data.nameJa}</a>
+                  <span class="rel-arrow">→</span>
+                  <a href={`/people/${l.to.id}`}>{l.to.data.nameJa}</a>
+                  <span class="rel-conf">確度 {l.confidence}</span>
+                  {l.note && <span class="rel-note">{l.note}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .rel-list { list-style: none; margin: 0; padding: 0; }
+  .rel-list li {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem;
+    padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .92rem;
+  }
+  .rel-list li:first-child { border-top: 1px solid var(--line); }
+  .rel-arrow { color: var(--muted); }
+  .rel-conf { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); letter-spacing: .06em; }
+  .rel-note { color: var(--ink-2); font-size: .85rem; flex-basis: 100%; }
+</style>

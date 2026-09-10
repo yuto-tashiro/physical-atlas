@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import { loadAtlas } from '../../lib/atlas';
+import { eraOrder, eraLabel } from '../../lib/vocab';
+
+const atlas = await loadAtlas();
+
+// 著者の時代でグルーピングする（著者未登録なら「その他」）
+const groupOf = (authorId: string) => atlas.peopleById.get(authorId)?.data.era ?? 'other';
+const groups = [...eraOrder, 'other']
+  .map((era) => ({ era, items: atlas.works.filter((w) => groupOf(w.data.author) === era) }))
+  .filter((g) => g.items.length > 0);
+---
+
+<Base title="著作" description="身体論の一次文献。原題・刊行年・邦訳・読みどころをまとめている。">
+  <div class="wrap section" style="padding-bottom:2rem">
+    <p class="eyebrow">Works</p>
+    <h1>著作から探す</h1>
+    <p style="max-width:44rem;color:var(--ink-2)">
+      身体論の一次文献{atlas.works.length}点。原題・刊行年・邦訳の情報と、身体論として重要な箇所を記録している。
+    </p>
+  </div>
+
+  {groups.map((g) => (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>{g.era === 'other' ? 'その他' : eraLabel[g.era]}</h2>
+        </div>
+        <ul class="link-list">
+          {g.items.map((w) => {
+            const author = atlas.peopleById.get(w.data.author);
+            return (
+              <li>
+                <a href={`/works/${w.id}`}>
+                  <span class="lead">{w.data.titleJa}</span>
+                  <span class="trail">
+                    {w.data.titleOriginal ?? w.data.titleEn ?? ''}
+                    {author ? ` ／ ${author.data.nameJa}` : ''} ／ {w.data.yearLabel ?? w.data.year}
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  ))}
+</Base>

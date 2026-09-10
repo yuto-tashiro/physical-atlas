@@ -1,0 +1,95 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ReviewBadge from '../../components/ReviewBadge.astro';
+import SourceList from '../../components/SourceList.astro';
+import { loadAtlas } from '../../lib/atlas';
+import { fieldLabel } from '../../lib/vocab';
+
+export async function getStaticPaths() {
+  const works = await getCollection('works');
+  return works.map((work) => ({ params: { id: work.id }, props: { work } }));
+}
+
+const { work } = Astro.props;
+const d = work.data;
+const { Content } = await render(work);
+const atlas = await loadAtlas();
+const author = atlas.peopleById.get(d.author);
+const coAuthors = d.coAuthors.map((id) => atlas.peopleById.get(id)).filter(Boolean);
+const concepts = d.concepts.map((id) => atlas.conceptsById.get(id)).filter(Boolean);
+---
+
+<Base title={d.titleJa} description={d.summary}>
+  <article>
+    <div class="wrap"><p class="breadcrumb"><a href="/works">著作</a></p></div>
+
+    <header class="wrap-text section" style="padding-bottom:1.8rem">
+      <p class="eyebrow">Work ・ {d.yearLabel ?? d.year}</p>
+      <h1 style="margin-bottom:.25rem">{d.titleJa}</h1>
+      <p style="color:var(--muted);font-family:var(--font-serif);font-size:1.02rem;margin-bottom:1.2rem">
+        {d.titleOriginal ?? d.titleEn}
+        {author && <> <span style="opacity:.6"> ・ </span><a href={`/people/${author.id}`}>{author.data.nameJa}</a></>}
+        {coAuthors.map((c) => <> ／ <a href={`/people/${c!.id}`}>{c!.data.nameJa}</a></>)}
+      </p>
+      <p style="font-family:var(--font-serif);font-size:1.08rem;line-height:1.9;max-width:44rem">{d.summary}</p>
+      {d.fields.length > 0 && (
+        <ul class="tags" style="margin-top:1rem">{d.fields.map((f) => <li class="tag">{fieldLabel[f]}</li>)}</ul>
+      )}
+    </header>
+
+    <div class="wrap-text article-body">
+      <div class="prose"><Content /></div>
+
+      {d.keyPassages.length > 0 && (
+        <div style="margin-top:2.5rem">
+          <h2>身体論として重要な箇所</h2>
+          <ul>{d.keyPassages.map((k) => <li>{k}</li>)}</ul>
+        </div>
+      )}
+
+      {d.readingGuide.length > 0 && (
+        <div style="margin-top:2rem">
+          <h2>読むべき章</h2>
+          <ul>{d.readingGuide.map((r) => <li>{r}</li>)}</ul>
+        </div>
+      )}
+
+      {d.translations.length > 0 && (
+        <div style="margin-top:2rem">
+          <h2>日本語訳</h2>
+          <ul>
+            {d.translations.map((t) => (
+              <li>
+                {t.title}
+                {t.translator && <span style="color:var(--muted)"> ／ {t.translator}訳</span>}
+                {t.publisher && <span style="color:var(--muted)"> ／ {t.publisher}</span>}
+                {t.year !== undefined && <span style="color:var(--muted)"> ／ {t.year}</span>}
+                {t.note && <span style="color:var(--muted)">（{t.note}）</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
+    {concepts.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><h2>関係する概念</h2></div>
+          <ul class="tags">
+            {concepts.map((c) => <li><a class="tag" href={`/concepts/${c!.id}`}>{c!.data.titleJa}</a></li>)}
+          </ul>
+        </div>
+      </section>
+    )}
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><h2>原典・参考文献</h2></div>
+        <SourceList sources={d.sources} />
+        <p style="margin-top:1.5rem"><ReviewBadge status={d.reviewStatus} lastReviewed={d.lastReviewed} /></p>
+      </div>
+    </section>
+  </article>
+</Base>

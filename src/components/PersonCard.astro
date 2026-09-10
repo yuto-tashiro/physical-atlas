@@ -1,0 +1,23 @@
+---
+import type { Person } from '../lib/atlas';
+import { formatLifespan, eraLabel } from '../lib/vocab';
+
+interface Props { person: Person; }
+const { person } = Astro.props;
+const d = person.data;
+---
+<a class="card" href={`/people/${person.id}`}>
+  <p class="card__meta">
+    <span class="era-dot" style={`--era: var(--era-${d.era})`}></span>
+    {formatLifespan(d.birth, d.death, d.lifespanLabel)}
+    <span style="opacity:.5"> ・ </span>{eraLabel[d.era]}
+  </p>
+  <h3 class="card__title">{d.nameJa}</h3>
+  <p class="card__sub">{d.nameEn}</p>
+  <p class="card__body">{d.headline}</p>
+  {d.keywords.length > 0 && (
+    <ul class="tags">
+      {d.keywords.slice(0, 4).map((k) => <li class="tag">#{k}</li>)}
+    </ul>
+  )}
+</a>

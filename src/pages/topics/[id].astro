@@ -1,0 +1,68 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PersonCard from '../../components/PersonCard.astro';
+import ConceptCard from '../../components/ConceptCard.astro';
+import ReviewBadge from '../../components/ReviewBadge.astro';
+import SourceList from '../../components/SourceList.astro';
+import { loadAtlas } from '../../lib/atlas';
+
+export async function getStaticPaths() {
+  const topics = await getCollection('topics');
+  return topics.map((topic) => ({ params: { id: topic.id }, props: { topic } }));
+}
+
+const { topic } = Astro.props;
+const d = topic.data;
+const { Content } = await render(topic);
+const atlas = await loadAtlas();
+const people = d.people.map((id) => atlas.peopleById.get(id)).filter(Boolean);
+const concepts = d.concepts.map((id) => atlas.conceptsById.get(id)).filter(Boolean);
+---
+
+<Base title={d.title} description={d.summary}>
+  <article>
+    <div class="wrap"><p class="breadcrumb"><a href="/topics">テーマ</a></p></div>
+
+    <header class="wrap-text section" style="padding-bottom:1.8rem">
+      <p class="eyebrow">Topic ・ {d.titleEn}</p>
+      <h1 style="margin-bottom:.5rem">{d.title}</h1>
+      <p style="font-family:var(--font-serif);font-size:clamp(1.1rem,1rem + .6vw,1.4rem);line-height:1.75;max-width:40rem;color:var(--accent-ink)">
+        {d.question}
+      </p>
+      <p style="max-width:44rem;color:var(--ink-2)">{d.summary}</p>
+    </header>
+
+    <div class="wrap-text article-body">
+      <div class="prose"><Content /></div>
+    </div>
+
+    {people.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><h2>この問いを扱った人物</h2></div>
+          <div class="grid grid-cards">{people.map((p) => <PersonCard person={p!} />)}</div>
+        </div>
+      </section>
+    )}
+
+    {concepts.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><h2>関係する概念</h2></div>
+          <div class="grid grid-cards">{concepts.map((c) => <ConceptCard concept={c!} />)}</div>
+        </div>
+      </section>
+    )}
+
+    {d.sources.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><h2>参考文献</h2></div>
+          <SourceList sources={d.sources} />
+          <p style="margin-top:1.5rem"><ReviewBadge status={d.reviewStatus} lastReviewed={d.lastReviewed} /></p>
+        </div>
+      </section>
+    )}
+  </article>
+</Base>

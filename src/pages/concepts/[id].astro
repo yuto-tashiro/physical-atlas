@@ -1,0 +1,139 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PersonCard from '../../components/PersonCard.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import ReviewBadge from '../../components/ReviewBadge.astro';
+import SourceList from '../../components/SourceList.astro';
+import { loadAtlas } from '../../lib/atlas';
+import { fieldLabel, themeLabel, evidenceLabel, evidenceHint } from '../../lib/vocab';
+
+export async function getStaticPaths() {
+  const concepts = await getCollection('concepts');
+  return concepts.map((concept) => ({ params: { id: concept.id }, props: { concept } }));
+}
+
+const { concept } = Astro.props;
+const d = concept.data;
+const { Content } = await render(concept);
+const atlas = await loadAtlas();
+
+const originators = d.originators.map((id) => atlas.peopleById.get(id)).filter(Boolean);
+const people = (atlas.conceptPeople.get(concept.id) ?? []).filter(
+  (p) => !d.originators.includes(p.id),
+);
+const works = atlas.conceptWorks.get(concept.id) ?? [];
+const events = atlas.conceptEvents.get(concept.id) ?? [];
+const related = d.relatedConcepts.map((id) => atlas.conceptsById.get(id)).filter(Boolean);
+const inboundConcepts = atlas.concepts.filter(
+  (c) => c.data.relatedConcepts.includes(concept.id) && !d.relatedConcepts.includes(c.id),
+);
+const topics = atlas.conceptTopics.get(concept.id) ?? [];
+const routes = atlas.conceptRoutes.get(concept.id) ?? [];
+---
+
+<Base title={d.titleJa} description={d.oneLiner}>
+  <article>
+    <div class="wrap"><p class="breadcrumb"><a href="/concepts">概念</a></p></div>
+
+    <header class="wrap-text section" style="padding-bottom:1.8rem">
+      <p class="eyebrow">Concept{d.yearLabel || d.year ? ` ・ ${d.yearLabel ?? d.year}` : ''}</p>
+      <h1 style="margin-bottom:.25rem">{d.titleJa}</h1>
+      <p style="color:var(--muted);font-family:var(--font-serif);font-size:1.05rem;margin-bottom:1.4rem">
+        {d.titleEn}{d.titleOriginal ? `／${d.titleOriginal}` : ''}
+      </p>
+
+      <div class="note" style="max-width:44rem;border-left-color:var(--accent)">
+        <p class="eyebrow" style="margin-bottom:.3rem">一言でいうと</p>
+        <p style="margin:0;font-family:var(--font-serif);font-size:1.05rem;line-height:1.85;color:var(--ink)">{d.oneLiner}</p>
+      </div>
+
+      <ul class="tags" style="margin-top:1.2rem">
+        <li class="tag" title={evidenceHint[d.evidenceStatus]}>{evidenceLabel[d.evidenceStatus]}</li>
+        {d.fields.map((f) => <li class="tag">{fieldLabel[f]}</li>)}
+        {d.themes.map((t) => <li class="tag">{themeLabel[t]}</li>)}
+      </ul>
+
+      {d.evidenceNote && (
+        <p class="note" style="margin-top:1rem;max-width:44rem">
+          <strong>現在の位置づけ：</strong>{d.evidenceNote}
+        </p>
+      )}
+    </header>
+
+    <div class="wrap-text article-body">
+      <div class="prose"><Content /></div>
+    </div>
+
+    {originators.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><h2>提唱・発展させた人物</h2></div>
+          <div class="grid grid-cards">{originators.map((p) => <PersonCard person={p!} />)}</div>
+        </div>
+      </section>
+    )}
+
+    {people.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>この概念を共有する人物</h2>
+            <p>提唱者以外で、この概念を引き受け・批判・展開した人物。</p>
+          </div>
+          <div class="grid grid-cards">{people.map((p) => <PersonCard person={p} />)}</div>
+        </div>
+      </section>
+    )}
+
+    {works.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><h2>関連する著作</h2></div>
+          <div class="grid grid-cards">{works.map((w) => <WorkCard work={w} />)}</div>
+        </div>
+      </section>
+    )}
+
+    {events.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><h2>関連する研究・出来事</h2></div>
+          <ul class="link-list">
+            {events.map((e) => (
+              <li>
+                <a href={`/history#event-${e.id}`}>
+                  <span class="lead">{e.data.title}</span>
+                  <span class="trail">{e.data.yearLabel ?? e.data.year}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )}
+
+    {(related.length > 0 || inboundConcepts.length > 0 || topics.length > 0 || routes.length > 0) && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><h2>ここから辿る</h2></div>
+          <ul class="tags">
+            {[...related, ...inboundConcepts].map((c) => (
+              <li><a class="tag" href={`/concepts/${c!.id}`}>概念：{c!.data.titleJa}</a></li>
+            ))}
+            {routes.map((r) => <li><a class="tag" href={`/connections#route-${r.id}`}>系譜：{r.data.title}</a></li>)}
+            {topics.map((t) => <li><a class="tag" href={`/topics/${t.id}`}>テーマ：{t.data.title}</a></li>)}
+          </ul>
+        </div>
+      </section>
+    )}
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><h2>参考文献</h2></div>
+        <SourceList sources={d.sources} />
+        <p style="margin-top:1.5rem"><ReviewBadge status={d.reviewStatus} lastReviewed={d.lastReviewed} /></p>
+      </div>
+    </section>
+  </article>
+</Base>

@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "body-atlas",
+  "compatibility_date": "2026-09-01",
+  // Astro が静的出力する dist/ をそのまま Cloudflare Workers の
+  // Static Assets として配信する（Worker スクリプトは不要）。
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}

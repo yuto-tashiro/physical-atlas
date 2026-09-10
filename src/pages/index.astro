@@ -1,0 +1,210 @@
+---
+import Base from '../layouts/Base.astro';
+import PersonCard from '../components/PersonCard.astro';
+import ConceptCard from '../components/ConceptCard.astro';
+import Chain from '../components/Chain.astro';
+import { loadAtlas } from '../lib/atlas';
+import { eraLabel, eraSubtitle } from '../lib/vocab';
+
+const atlas = await loadAtlas();
+const featuredPeople = atlas.people.filter((p) => p.data.featured);
+// 「概念から探す」は思想史の骨格をなす概念、「現代科学との接続」は実証研究に接する概念。
+// 同じカードが二度出ないように、位置づけで振り分ける。
+const scienceStatuses = ['established', 'developing', 'contested'];
+const featuredConcepts = atlas.concepts.filter(
+  (c) => c.data.featured && !scienceStatuses.includes(c.data.evidenceStatus),
+);
+const modernConcepts = atlas.concepts.filter((c) =>
+  scienceStatuses.includes(c.data.evidenceStatus),
+);
+
+/** 大きな歴史的ストーリー（要件定義 §3） */
+const storyline = [
+  '魂と身体', '生きた有機体', '解剖される身体', '機械としての身体',
+  '精神と身体の分離', '生命・力としての身体', '感じる身体', '世界を経験する身体',
+  '環境の中で行為する身体', '自己を感じる身体', '道具・環境へ拡張する身体',
+  '自己を維持し予測する身体',
+];
+---
+
+<Base title="身体の哲学と科学 アトラス" ogTitle="身体とは何か。｜身体の哲学と科学 アトラス">
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Body Philosophy &amp; Science Atlas</p>
+      <h1 class="hero__title">身体とは何か。</h1>
+      <p class="hero__lead">
+        哲学と科学は、2500年以上にわたってこの問いを考えてきた。
+      </p>
+      <p class="hero__sub">
+        プラトン、アリストテレス、デカルト、スピノザ、メルロ＝ポンティ、ギブソン、ヴァレラ、そして現代神経科学へ。<br />
+        人類が身体をどう理解してきたのか、その思想の系譜を辿る。
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="/history">歴史をたどる</a>
+        <a class="btn" href="/people">人物から探す</a>
+        <a class="btn" href="/concepts">概念から探す</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>2500年の身体論</h2>
+        <p>身体についての考え方は、この順で変わってきた——ただしこれは「進歩の物語」ではない。</p>
+      </div>
+      <ol class="story">
+        {storyline.map((s, i) => (
+          <li class="story__item">
+            <span class="story__n">{String(i + 1).padStart(2, '0')}</span>
+            <span class="story__label">{s}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="note" style="margin-top:1.6rem;max-width:46rem">
+        古代に比較的一体として考えられていた生命・身体・心・環境が、近代科学によって一度分解され、
+        その後の哲学・生理学・心理学・神経科学によって再び関係づけられてきた——
+        これがこのサイト全体を貫く一つの<strong>仮説</strong>であり、確定した史観ではない。
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>時代でみる</h2>
+        <p>それぞれの時代で、身体はどんな対象として扱われたのか。</p>
+      </div>
+      <div class="grid grid-wide">
+        {atlas.peopleByEra.map((g) => (
+          <a class="card era-card" href={`/people?era=${g.era}`} style={`--era: var(--era-${g.era})`}>
+            <p class="card__meta"><span class="era-dot" style={`--era: var(--era-${g.era})`}></span>{g.people.length}人</p>
+            <h3 class="card__title">{eraLabel[g.era]}</h3>
+            <p class="card__sub">{eraSubtitle[g.era]}</p>
+            <p class="card__body">
+              {g.people.slice(0, 6).map((p) => p.data.nameJa).join('、')}
+              {g.people.length > 6 ? ' ほか' : ''}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {featuredPeople.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>まず知りたい人物</h2>
+          <p>一人につき一つのメッセージ。詳しくは各ページへ。</p>
+        </div>
+        <div class="grid grid-cards">
+          {featuredPeople.map((p) => <PersonCard person={p} />)}
+        </div>
+        <p style="margin-top:1.5rem"><a class="btn" href="/people">人物一覧（全{atlas.people.length}人）</a></p>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>主要な思想系譜</h2>
+        <p>矢印のラベルは関係の種類を示す。ラベルのない矢印は直接影響。</p>
+      </div>
+      <div class="stack" style="gap:2.2rem">
+        {atlas.routes.slice(0, 4).map((r) => (
+          <div>
+            <h3 style="margin-bottom:.15rem">{r.data.title}</h3>
+            <p style="color:var(--muted);font-size:.88rem;margin-bottom:.8rem;max-width:44rem">{r.data.summary}</p>
+            <Chain steps={r.data.steps} />
+          </div>
+        ))}
+      </div>
+      <p style="margin-top:2rem"><a class="btn" href="/connections">系譜をすべて見る</a></p>
+    </div>
+  </section>
+
+  {featuredConcepts.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>概念から探す</h2>
+          <p>一つの概念から、それを共有する人物・著作・実験へ辿れる。</p>
+        </div>
+        <div class="grid grid-cards">
+          {featuredConcepts.map((c) => <ConceptCard concept={c} />)}
+        </div>
+        <p style="margin-top:1.5rem"><a class="btn" href="/concepts">概念一覧（全{atlas.concepts.length}件）</a></p>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>現代科学との接続</h2>
+        <p>
+          哲学の問いが、いま実験室でどう扱われているか。
+          ただし「確立した知見」と「まだ論争中の主張」は分けて表示している。
+        </p>
+      </div>
+      <div class="grid grid-cards">
+        {modernConcepts.map((c) => <ConceptCard concept={c} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>問いから入る</h2>
+      </div>
+      <ul class="link-list">
+        {atlas.topics.map((t) => (
+          <li>
+            <a href={`/topics/${t.id}`}>
+              <span class="lead">{t.data.question}</span>
+              <span class="trail">{t.data.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(3.5rem, 2rem + 8vw, 7rem) clamp(2.5rem, 1.5rem + 5vw, 5rem);
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 12% 0%, var(--accent-soft) 0%, transparent 55%),
+      var(--paper);
+  }
+  .hero__title {
+    font-size: clamp(2.4rem, 1.4rem + 5vw, 4.4rem);
+    letter-spacing: .06em;
+    margin-bottom: .5rem;
+  }
+  .hero__lead {
+    font-family: var(--font-serif);
+    font-size: clamp(1.05rem, .95rem + .7vw, 1.45rem);
+    color: var(--ink-2);
+    max-width: 34rem;
+    margin-bottom: 1.4rem;
+  }
+  .hero__sub { color: var(--muted); font-size: .95rem; max-width: 44rem; line-height: 1.9; }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 2rem; }
+
+  .story { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .story__item {
+    display: flex; align-items: baseline; gap: .5rem;
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: .3rem .95rem; background: var(--surface);
+  }
+  .story__n { font-family: var(--font-mono); font-size: .65rem; color: var(--muted); }
+  .story__label { font-family: var(--font-serif); font-size: .95rem; }
+
+  .era-card { border-left: 3px solid var(--era, var(--line)); }
+</style>

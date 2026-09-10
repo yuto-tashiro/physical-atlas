@@ -1,0 +1,86 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** ページ固有のOGタイトル（省略時は title） */
+  ogTitle?: string;
+}
+
+const { title, description = '身体とは何か。哲学と科学が2500年以上にわたって考えてきたことの地図。', ogTitle } = Astro.props;
+const siteName = '身体の哲学と科学 アトラス';
+const fullTitle = title === siteName ? title : `${title}｜${siteName}`;
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site ?? 'https://example.com');
+
+const nav = [
+  { href: '/history', label: '通史' },
+  { href: '/people', label: '人物' },
+  { href: '/concepts', label: '概念' },
+  { href: '/works', label: '著作' },
+  { href: '/topics', label: 'テーマ' },
+  { href: '/connections', label: '系譜' },
+  { href: '/about', label: 'このサイト' },
+];
+const path = Astro.url.pathname;
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={ogTitle ?? fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23fbfaf7'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%2394402c' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%2394402c' stroke-width='1' stroke-dasharray='2 3'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap site-header__inner">
+        <a class="site-logo" href="/">
+          身体の哲学と科学
+          <small>Body Atlas</small>
+        </a>
+        <nav class="site-nav" aria-label="メインナビゲーション">
+          <ul>
+            {nav.map((item) => (
+              <li>
+                <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap stack">
+        <p style="margin:0">
+          <strong style="font-family:var(--font-serif);color:var(--ink)">身体の哲学と科学 アトラス</strong><br />
+          身体をめぐる人類の思考の系譜を、哲学史・医学史・神経科学史を横断して辿る。
+        </p>
+        <p style="margin:0">
+          <a href="/about">このサイトについて</a> ・
+          <a href="/about#contributing">情報の追加方法</a> ・
+          <a href="/history">通史</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
