@@ -11,7 +11,7 @@ themes: [body, perception, action, self]
 keywords: [lived-body, body-schema, motor-intentionality, habit, incorporation]
 headline: 身体は精神に操作される機械ではなく、それ自体が世界へ向かう主体である。
 summary: 『知覚の現象学』（1945）で、身体を対象としても機械としても捉えない第三の道を示した。身体は計算してから動くのではなく、状況に応じてすでに構えている。身体図式と運動志向性を中心に据え、主体としての身体と対象としての身体を橋渡しした、身体論の最大の結節点。
-works: [phenomenology-of-perception, visible-and-invisible]
+works: [phenomenology-of-perception, visible-and-invisible, eye-and-mind]
 concepts: [lived-body, body-schema, motor-intentionality, habit, embodiment]
 relatedPeople:
   - id: husserl

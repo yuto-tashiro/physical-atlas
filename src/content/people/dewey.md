@@ -11,7 +11,7 @@ themes: [action, perception, environment, life]
 keywords: [organism-environment, habit, reflex-arc, experience]
 headline: 刺激と反応を別々の出来事に切り分ける見方を批判し、有機体と環境の連続的な相互作用を単位にした。
 summary: 1896年の論文「心理学における反射弧概念」で、刺激→中枢→反応という直線モデルを批判した。子どもが炎に手を伸ばして引っ込めるとき、見ることと手を伸ばすことは別々の出来事ではなく、一つの協調的な行為の局面である。有機体と環境を一つの系として捉える発想の起点。
-works: [reflex-arc, experience-and-nature]
+works: [reflex-arc, experience-and-nature, art-as-experience]
 concepts: [habit, affordance]
 relatedPeople:
   - id: william-james
