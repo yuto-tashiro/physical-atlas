@@ -10,7 +10,7 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
  * 実際に配信しているドメインと一致させること。
  * ステージング等で切り替えたいときは環境変数 SITE_URL で上書きできる。
  */
-const site = process.env.SITE_URL ?? 'https://physical-atlas.hiluco.net';
+const site = process.env.SITE_URL ?? 'https://physical-atlas.hiluco.jp';
 
 export default defineConfig({
   site,

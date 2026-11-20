@@ -2,7 +2,7 @@
 
 身体をめぐる人類の思考の系譜を、哲学史・医学史・神経科学史を横断して辿るWebサイト。
 
-**公開URL: https://physical-atlas.hiluco.net**
+**公開URL: https://physical-atlas.hiluco.jp**
 
 - **技術構成**：Astro（Content Collections）+ Markdown + Cloudflare Workers（静的アセット配信）
 - **コンテンツ**：すべて `src/content/` 以下の Markdown。CMSは使っていない
@@ -89,7 +89,7 @@ npm run deploy
 
 ### 公開URL
 
-本番は **https://physical-atlas.hiluco.net**（Cloudflare Workers、HILUCO アカウント）。
+本番は **https://physical-atlas.hiluco.jp**（Cloudflare Workers、HILUCO アカウント）。
 
 `astro.config.mjs` の `site` はサイトマップと canonical URL に使われるので、
 **実際に配信しているドメインと必ず一致させる**。ドメインを変えたらここも変える。
