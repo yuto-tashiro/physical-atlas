@@ -4,8 +4,8 @@ titleEn: Tool
 question: 身体はどこまでが身体なのか。
 summary: 杖に慣れると、触覚の場所は杖の先端へ移動する。道具が身体に組み込まれるなら、身体の境界はどこにあるのか。そして認知の境界はどこにあるのか。
 order: 50
-people: [heidegger, merleau-ponty, head-holmes, andy-clark, gibson, nishida-kitaro, dreyfus]
-concepts: [body-schema, extended-mind, motor-intentionality, affordance, acting-intuition, skill-acquisition]
+people: [heidegger, merleau-ponty, head-holmes, andy-clark, gibson, nishida-kitaro, miki-kiyoshi, dreyfus]
+concepts: [body-schema, extended-mind, motor-intentionality, affordance, acting-intuition, kosoryoku, skill-acquisition]
 reviewStatus: researched
 sources:
   - type: paper
