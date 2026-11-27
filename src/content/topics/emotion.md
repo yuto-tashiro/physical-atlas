@@ -4,7 +4,7 @@ titleEn: Emotion
 question: 感情と身体はどう関係するのか。
 summary: 悲しいから泣くのか、泣くから悲しいのか。感情を身体の側から捉える試みは、スピノザからジェームズ、ダマシオを経て、現代の内受容感覚研究へと続いている。
 order: 30
-people: [spinoza, darwin, william-james, nietzsche, damasio, lisa-feldman-barrett, friston]
+people: [spinoza, darwin, william-james, nietzsche, damasio, lisa-feldman-barrett, friston, miki-shigeo]
 concepts: [affect, interoception, somatic-marker, active-inference]
 reviewStatus: researched
 sources:

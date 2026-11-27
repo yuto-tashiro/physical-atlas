@@ -7,8 +7,8 @@ fields: [neuroscience, philosophy, psychology]
 themes: [body, action, self]
 year: 1911
 originators: [head-holmes, merleau-ponty]
-relatedPeople: [schilder, sherrington, husserl]
-relatedConcepts: [body-image, proprioception, lived-body, extended-mind, motor-intentionality]
+relatedPeople: [schilder, sherrington, husserl, gallagher]
+relatedConcepts: [body-image, proprioception, lived-body, extended-mind, motor-intentionality, sense-of-agency]
 works: [phenomenology-of-perception]
 evidenceStatus: developing
 evidenceNote: 身体図式の可塑性（道具使用による身体近傍空間の変化など）は複数の手法で示されているが、身体図式が単一の神経表現なのか、複数の機能の総称なのかは決着していない。

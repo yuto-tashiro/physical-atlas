@@ -6,7 +6,7 @@ fields: [psychology, sociology, medicine]
 themes: [body, self, society]
 year: 1935
 originators: [schilder]
-relatedPeople: [head-holmes, merleau-ponty, foucault]
+relatedPeople: [head-holmes, merleau-ponty, foucault, gallagher]
 relatedConcepts: [body-schema, social-body]
 evidenceStatus: developing
 evidenceNote: 臨床上重要な構成概念だが、測定尺度が多数存在し、何を測っているかが研究間で一致しないという方法論的課題がある。

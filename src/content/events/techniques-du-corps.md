@@ -5,7 +5,7 @@ year: 1934
 era: early-c20
 kind: publication
 summary: マルセル・モースが、歩き方・泳ぎ方・しゃがみ方といった身体の使い方が社会ごとに学習される技法であることを論じた（1934年5月17日講演、1935/36年発表）。ブルデューのハビトゥス、フーコーの規律訓練の先駆。
-concepts: [social-body, habit]
+concepts: [social-body, habit, habitus]
 people: [foucault]
 reviewStatus: researched
 sources:

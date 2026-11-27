@@ -4,8 +4,8 @@ titleEn: Movement
 question: 身体はいかに動くのか。
 summary: 膨大な自由度を持つ身体が、なぜ滑らかに動けるのか。運動制御の科学と、運動志向性の現象学は、同じ現象を別の側から照らしている。
 order: 20
-people: [bernstein, sherrington, merleau-ponty, gibson, head-holmes]
-concepts: [degrees-of-freedom, proprioception, motor-intentionality, body-schema, affordance]
+people: [bernstein, sherrington, merleau-ponty, gibson, head-holmes, dreyfus]
+concepts: [degrees-of-freedom, proprioception, motor-intentionality, body-schema, affordance, skill-acquisition, sense-of-agency]
 reviewStatus: researched
 sources:
   - type: secondary
