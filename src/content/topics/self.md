@@ -4,8 +4,8 @@ titleEn: Self
 question: 身体から自己はどう生まれるのか。
 summary: 自分の身体を「自分のもの」と感じ、自分が動かしていると感じること。この当たり前が、実験的に操作できることが分かったとき、自己をめぐる問いは新しい段階に入った。
 order: 40
-people: [avicenna, husserl, merleau-ponty, damasio, head-holmes, ichikawa-hiroshi, gallagher, kimura-bin, nishida-kitaro]
-concepts: [body-schema, body-image, lived-body, interoception, sense-of-agency, aida]
+people: [avicenna, husserl, merleau-ponty, damasio, head-holmes, ichikawa-hiroshi, gallagher, kimura-bin, nishida-kitaro, van-der-kolk]
+concepts: [body-schema, body-image, lived-body, interoception, sense-of-agency, aida, trauma-embodiment]
 reviewStatus: researched
 sources:
   - type: paper

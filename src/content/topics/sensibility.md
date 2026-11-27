@@ -4,8 +4,8 @@ titleEn: Sensibility
 question: 言葉になる前に、身体は何を感じとっているのか。
 summary: 美学（aesthetics）の語源は、感覚・知覚を意味するアイステーシスである。美や心地よさ、場の重さや親密さを感じとることは、知の劣った形なのか、それとも別の型の知なのか。感覚の学として始まった美学が、身体の側へ戻ってくるまでの問い。
 order: 80
-people: [baumgarten, kant, nietzsche, dewey, merleau-ponty, schmitz, bohme, shusterman, zeami, nakamura-yujiro]
-concepts: [aesthetics-sensory-cognition, common-sense, atmosphere, somaesthetics, lived-body, interoception]
+people: [baumgarten, kant, nietzsche, dewey, merleau-ponty, schmitz, bohme, shusterman, zeami, motoori-norinaga, nakamura-yujiro, temple-grandin]
+concepts: [aesthetics-sensory-cognition, mono-no-aware, common-sense, atmosphere, somaesthetics, lived-body, interoception]
 reviewStatus: researched
 sources:
   - type: reference
