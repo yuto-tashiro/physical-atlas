@@ -4,8 +4,8 @@ titleEn: The Social Body
 question: 身体と社会はどう関係するのか。
 summary: 歩き方も、座り方も、痛みの表し方も、社会ごとに学習される。身体は自然の与件ではなく、制度によって訓練され、規範化され、管理される。
 order: 60
-people: [foucault, nietzsche, schilder, merleau-ponty, bourdieu, hashizume-daisaburo, canguilhem, nitobe-inazo, miyamoto-tsuneichi]
-concepts: [social-body, habit, body-image, habitus, biological-normativity]
+people: [foucault, nietzsche, schilder, merleau-ponty, bourdieu, hashizume-daisaburo, canguilhem, nitobe-inazo, miyamoto-tsuneichi, skrabanek]
+concepts: [social-body, habit, body-image, habitus, biological-normativity, healthism]
 reviewStatus: researched
 sources:
   - type: primary

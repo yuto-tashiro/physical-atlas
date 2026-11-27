@@ -4,7 +4,7 @@ titleEn: Organism
 question: 生命と認知は連続しているのか。
 summary: 心はどこから始まるのか。細胞が自己を維持することと、人間が世界を意味づけることのあいだに、連続性はあるのか。
 order: 70
-people: [aristotle, darwin, dewey, uexkull, canguilhem, miki-shigeo, varela, friston, spinoza]
+people: [hippocrates, aristotle, darwin, dewey, uexkull, canguilhem, miki-shigeo, varela, friston, spinoza]
 concepts: [hylomorphism, umwelt, biological-normativity, autopoiesis, enactivism, active-inference]
 reviewStatus: researched
 sources:
