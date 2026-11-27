@@ -22,6 +22,12 @@ steps:
   - kind: event
     id: rubber-hand-1998
     relation: scientific_extension
+  - kind: person
+    id: gallagher
+    relation: conceptual_parallel
+    note: ラバーハンド錯覚などの実験研究と並行して、身体図式と身体イメージ、所有感と主体感を概念的に区別した。
+  - kind: concept
+    id: sense-of-agency
   - kind: concept
     id: extended-mind
 reviewStatus: researched

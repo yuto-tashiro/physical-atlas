@@ -18,8 +18,14 @@ steps:
   - kind: note
     label: organism–environment
   - kind: person
+    id: uexkull
+    note: 直前のデューイとの直接の関係はない。生物学の側から、生き物ごとに固有の世界（環世界）があると論じた。
+  - kind: concept
+    id: umwelt
+  - kind: person
     id: gibson
     relation: conceptual_parallel
+    note: 環境の意味を動物の行為から記述する点で環世界論と並行するが、ギブソンは環境の側の実在を強調する。
   - kind: person
     id: varela
     relation: conceptual_parallel

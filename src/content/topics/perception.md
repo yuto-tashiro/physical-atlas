@@ -4,8 +4,8 @@ titleEn: Perception
 question: 身体はいかに世界を知るのか。
 summary: 知覚は世界を内部に写し取ることなのか、それとも身体がすでに世界へ関わっていることの一側面なのか。この問いをめぐって、哲学と心理学は二世紀にわたり対立してきた。
 order: 10
-people: [aristotle, bergson, husserl, merleau-ponty, gibson, varela, friston]
-concepts: [affordance, lived-body, enactivism, active-inference, motor-intentionality]
+people: [aristotle, bergson, husserl, uexkull, merleau-ponty, gibson, varela, friston]
+concepts: [affordance, umwelt, lived-body, enactivism, active-inference, motor-intentionality]
 reviewStatus: researched
 sources:
   - type: reference
